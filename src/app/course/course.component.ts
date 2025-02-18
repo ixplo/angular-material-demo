@@ -22,6 +22,7 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
   lessons: Lesson[] = [];
   isLoading = false;
+  expandedLesson: Lesson = null;
 
   @ViewChild(MatPaginator)
   paginator: MatPaginator;
@@ -71,5 +72,14 @@ export class CourseComponent implements OnInit, AfterViewInit {
         finalize(() => this.isLoading = false)
       )
       .subscribe(lessons => this.lessons = lessons);
+  }
+
+  onToggleLesson(lesson: Lesson) {
+    if (lesson === this.expandedLesson) {
+      this.expandedLesson = null;
+    }
+    else {
+      this.expandedLesson = lesson;
+    }
   }
 }
