@@ -18,7 +18,7 @@
     multiTemplateDataRows="true"
     class="lessons-table mat-elevation-z8">
 
-    <ng-container matColumnDef="select">
+    <ng-container matColumnDef="select" sticky="true">
 
       <th mat-header-cell *matHeaderCellDef>
         <mat-checkbox
@@ -34,7 +34,7 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="seqNo">
+    <ng-container matColumnDef="seqNo" sticky="true">
 
       <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
 
@@ -66,7 +66,7 @@
 
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
 
     <tr mat-row
         (click)="onToggleLesson(lesson)"
