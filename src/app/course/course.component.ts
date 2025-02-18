@@ -1,47 +1,48 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
+import {MatPaginator} from "@angular/material/paginator";
+import {MatSort} from "@angular/material/sort";
+import {MatTableDataSource} from "@angular/material/table";
 import {Course} from "../model/course";
 import {CoursesService} from "../services/courses.service";
-import {debounceTime, distinctUntilChanged, startWith, tap, delay, catchError} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, startWith, tap, delay, catchError, finalize} from 'rxjs/operators';
 import {merge, fromEvent, throwError} from "rxjs";
 import {Lesson} from "../model/lesson";
 
 
 @Component({
-    selector: 'course',
-    templateUrl: './course.component.html',
-    styleUrls: ['./course.component.scss'],
-    standalone: false
+  selector: 'course',
+  templateUrl: './course.component.html',
+  styleUrls: ['./course.component.scss'],
+  standalone: false
 })
 export class CourseComponent implements OnInit, AfterViewInit {
 
-    course:Course;
+  course: Course;
 
-    lessons: Lesson[] = [];
+  lessons: Lesson[] = [];
+  isLoading = false;
+  displayedColumns: string[] = ['seqNo', 'description', 'duration'];
 
-    displayedColumns: string[] = ['seqNo', 'description', 'duration'];
+  constructor(private route: ActivatedRoute,
+              private coursesService: CoursesService) {
 
-    constructor(private route: ActivatedRoute,
-                private coursesService: CoursesService) {
+  }
 
-    }
+  ngOnInit() {
 
-    ngOnInit() {
+    this.course = this.route.snapshot.data["course"];
 
-        this.course = this.route.snapshot.data["course"];
+    this.loadLessonsPage();
+  }
 
-        this.loadLessonsPage();
-    }
-
-    ngAfterViewInit() {
+  ngAfterViewInit() {
 
 
-    }
+  }
 
   private loadLessonsPage() {
+    this.isLoading = true;
     this.coursesService.findLessons(this.course.id, 'asc', 0, 3)
       .pipe(
         tap(lessons => this.lessons = lessons),
@@ -49,7 +50,8 @@ export class CourseComponent implements OnInit, AfterViewInit {
           console.log("Error loading lessons:", error);
           alert("Error loading lessons");
           return throwError(error);
-        })
+        }),
+        finalize(() => this.isLoading = false)
       )
       .subscribe(lessons => this.lessons = lessons);
   }
