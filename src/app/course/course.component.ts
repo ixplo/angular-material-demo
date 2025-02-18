@@ -8,6 +8,8 @@ import {CoursesService} from "../services/courses.service";
 import {debounceTime, distinctUntilChanged, startWith, tap, delay, catchError, finalize} from 'rxjs/operators';
 import {merge, fromEvent, throwError} from "rxjs";
 import {Lesson} from "../model/lesson";
+import {SelectionModel} from "@angular/cdk/collections";
+import {MatCheckboxChange} from "@angular/material/checkbox";
 
 
 @Component({
@@ -30,7 +32,9 @@ export class CourseComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort)
   sort: MatSort;
 
-  displayedColumns: string[] = ['seqNo', 'description', 'duration'];
+  selection = new SelectionModel<Lesson>(true, []);
+
+  displayedColumns: string[] = ['select', 'seqNo', 'description', 'duration'];
 
   constructor(private route: ActivatedRoute,
               private coursesService: CoursesService) {
@@ -81,5 +85,21 @@ export class CourseComponent implements OnInit, AfterViewInit {
     else {
       this.expandedLesson = lesson;
     }
+  }
+
+  onLessonToggled(lesson: Lesson) {
+    this.selection.toggle(lesson);
+  }
+
+  toggleAll() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.selection.select(...this.lessons);
+    }
+  }
+
+  isAllSelected() {
+    return this.selection.selected?.length === this.lessons?.length;
   }
 }
